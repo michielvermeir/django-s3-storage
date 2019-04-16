@@ -107,6 +107,11 @@ class _Local(local):
             connection_kwargs["aws_session_token"] = storage.settings.AWS_SESSION_TOKEN
         if storage.settings.AWS_S3_ENDPOINT_URL:
             connection_kwargs["endpoint_url"] = storage.settings.AWS_S3_ENDPOINT_URL
+        if storage.settings.AWS_S3_CONNECTION_TIMEOUT:
+            connection_kwargs["connect_timeout"] = storage.settings.AWS_S3_CONNECTION_TIMEOUT
+        if storage.settings.AWS_S3_MAX_RETRY_ATTEMPTS:
+            connection_kwargs["retries"] = {"max_attempts": storage.settings.AWS_S3_MAX_RETRY_ATTEMPTS}
+
         self.session = boto3.session.Session()
         self.s3_connection = self.session.client("s3", config=Config(
             s3={"addressing_style": storage.settings.AWS_S3_ADDRESSING_STYLE},
