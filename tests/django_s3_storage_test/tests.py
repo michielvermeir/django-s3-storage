@@ -46,6 +46,12 @@ class TestS3Storage(SimpleTestCase):
     def testSettingsOverwrittenByKwargs(self):
         self.assertEqual(S3Storage().settings.AWS_S3_CONTENT_LANGUAGE, "")
         self.assertEqual(S3Storage(aws_s3_content_language="foo").settings.AWS_S3_CONTENT_LANGUAGE, "foo")
+        
+        self.assertNotEqual(S3Storage(aws_s3_max_retry_attempts=1).settings.AWS_S3_MAX_RETRY_ATTEMPTS, 0)
+        self.assertEqual(S3Storage(aws_s3_max_retry_attempts=1).settings.AWS_S3_MAX_RETRY_ATTEMPTS, 1)
+        self.assertNotEqual(S3Storage(aws_s3_connection_timeout=5 * 60).settings.AWS_S3_MAX_RETRY_ATTEMPTS, None)
+        self.assertNotEqual(S3Storage(aws_s3_connection_timeout=5 * 60).settings.AWS_S3_MAX_RETRY_ATTEMPTS, 5 * 60)
+
 
     def testSettingsCannotUsePublicUrlAndBucketAuth(self):
         self.assertRaises(ImproperlyConfigured, lambda: S3Storage(

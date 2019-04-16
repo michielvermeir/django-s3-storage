@@ -107,15 +107,20 @@ class _Local(local):
             connection_kwargs["aws_session_token"] = storage.settings.AWS_SESSION_TOKEN
         if storage.settings.AWS_S3_ENDPOINT_URL:
             connection_kwargs["endpoint_url"] = storage.settings.AWS_S3_ENDPOINT_URL
+        
+        config_kwargs = {}
         if storage.settings.AWS_S3_CONNECTION_TIMEOUT:
-            connection_kwargs["connect_timeout"] = storage.settings.AWS_S3_CONNECTION_TIMEOUT
+            config_kwargs["connect_timeout"] = storage.settings.AWS_S3_CONNECTION_TIMEOUT
         if storage.settings.AWS_S3_MAX_RETRY_ATTEMPTS:
-            connection_kwargs["retries"] = {"max_attempts": storage.settings.AWS_S3_MAX_RETRY_ATTEMPTS}
+            config_kwargs["retries"] = {"max_attempts": storage.settings.AWS_S3_MAX_RETRY_ATTEMPTS}
 
         self.session = boto3.session.Session()
         self.s3_connection = self.session.client("s3", config=Config(
-            s3={"addressing_style": storage.settings.AWS_S3_ADDRESSING_STYLE},
+            s3={
+                "addressing_style": storage.settings.AWS_S3_ADDRESSING_STYLE
+            },
             signature_version=storage.settings.AWS_S3_SIGNATURE_VERSION,
+            **config_kwargs
         ), **connection_kwargs)
 
 
@@ -149,7 +154,9 @@ class S3Storage(Storage):
         "AWS_S3_KMS_ENCRYPTION_KEY_ID": "",
         "AWS_S3_GZIP": True,
         "AWS_S3_SIGNATURE_VERSION": "s3v4",
-        "AWS_S3_FILE_OVERWRITE": False
+        "AWS_S3_FILE_OVERWRITE": False,
+        "AWS_S3_CONNECTION_TIMEOUT": "",
+        "AWS_S3_MAX_RETRY_ATTEMPTS": ""
     }
 
     s3_settings_suffix = ""
